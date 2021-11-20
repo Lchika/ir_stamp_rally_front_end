@@ -1,3 +1,4 @@
+import API from "./api";
 import Api from "./api"
 
 export const getPoints = async(from_id) => {
@@ -9,3 +10,11 @@ export const getPoints = async(from_id) => {
 	}
 };
 
+export const deletePoints = async() => {
+  try {
+    const response = await Api.delete("/points");
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+}

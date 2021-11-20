@@ -1,75 +1,107 @@
 <script>
-	import { getPoints } from "./points";
-	import { getShots } from "./shots";
-	import { getCheckpoints } from "./checkpoints";
+	import { getPoints, deletePoints } from "./points";
+	import { getShots, deleteShots } from "./shots";
+  import { getDevices, deleteDevices } from "./devices";
 
-	let points = [0, 0, 0];
-	let shots = [0, 0, 0];
-	let checkpoints = [];
-	setInterval(async () => {
+	let points = [];
+	let shot = 0;
+  let devices = [];
+  async function updateDevices() {
+    const d = await getDevices();
+    console.log("devises:", d);
+    devices = d.devices;
+  }
+  setInterval(async () => {
 		const c = await getPoints(1);
-		points[0] = c.count;
-		const d = await getPoints(2);
-		points[1] = d.count;
+		points = c.points;
 		const e = await getShots(1);
-		shots[0] = e.count;
-		const f = await getShots(2);
-		shots[1] = f.count;
-		checkpoints = await getCheckpoints(0);
+		shot = e.count;
+    await updateDevices();
 	}, 1000);
+  async function initGame() {
+    await deletePoints();
+    await deleteShots();
+    //await deleteDevices();
+    //await updateDevices();
+  }
 </script>
 
 <main>
-	<div class="row">
-		<div class="col">
-			<div class="row">
-				<h1>Team 1</h1>
-			</div>
-			<div class="row">
-				<h2>point = {points[0]}</h2>
-				<h2>shot = {shots[0]}</h2>
-			</div>
-		</div>
-		<div class="col">
-			<div class="row">
-				<h1>Team 2</h1>
-			</div>
-			<div class="row">
-				<h2>point = {points[1]}</h2>
-				<h2>shot = {shots[1]}</h2>
-			</div>
-		</div>
-		<div class="col">
-			<div class="row">
-				<h1>Checkpoint 0</h1>
-			</div>
-			<div class="row">
-				{#each checkpoints as checkpoint}
-					<h2>Team {checkpoint.from_id + 1}</h2>
-				{/each}
-			</div>
-		</div>
-	</div>
+  <div class="row">
+    <h1>赤外線スタンプラリーゲーム</h1>
+  </div>
+  <div class="row m-3">
+    <div class="col">
+      <div class="main_stats_window">
+        <h2 class="m-2">得点</h2>
+        <p class="main_stats_value">{points.length}</p>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">当てた的のID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each points as point}
+            <tr>
+              <th scope="row">{point.to_id}</th>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <div class="main_stats_window">
+        <h2 class="m-2">発射回数</h2>
+        <p class="main_stats_value">{shot}</p>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5 mb-2">
+    <div class="col">
+      <h4>的デバイス一覧</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">mode</th>
+            <th scope="col">MAC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each devices as device}
+            <tr>
+              <th scope="row">{device.unit_id}</th>
+              <td>{device.mode}</td>
+              <td>{device.mac}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row m-3">
+    <div class="col">
+      <button type="button" class="btn btn-outline-secondary" on:click={initGame}>初期化</button>
+    </div>
+  </div>
 </main>
 
 <style>
 	main {
 		text-align: center;
 		padding: 1em;
-		max-width: 240px;
+		max-width: 800px;
 		margin: 0 auto;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
+  .main_stats_window {
+    border: solid 1px;
+    border-radius: 0.5em;
+  }
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+  .main_stats_value {
+    font-size: 50px;
+  }
 </style>

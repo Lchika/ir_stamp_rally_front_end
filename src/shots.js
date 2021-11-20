@@ -9,3 +9,11 @@ export const getShots = async(from_id) => {
 	}
 };
 
+export const deleteShots = async() => {
+  try {
+    const response = await Api.delete("/shots");
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+}
