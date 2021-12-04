@@ -1,4 +1,3 @@
-import API from "./api";
 import Api from "./api"
 
 export const getPoints = async(from_id) => {

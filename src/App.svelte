@@ -21,7 +21,7 @@
   async function initGame() {
     await deletePoints();
     await deleteShots();
-    //await deleteDevices();
+    await deleteDevices();
     //await updateDevices();
   }
 </script>
